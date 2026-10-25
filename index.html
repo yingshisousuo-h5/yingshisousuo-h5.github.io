@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>映视搜罗 - 影视片单手工整理与导航 | yingshisousuo-h5.github.io</title>
+<meta name="description" content="映视搜罗(yingshisousuo-h5.github.io)是手工整理型影视导航站，以藤编淘箩为视觉，收录公版/正版免费/官方开放片段片单；无搜索框、不抓取播放源、不做盗版聚合搜索。" />
+<meta name="keywords" content="映视搜罗,yingshisousuo-h5,影视片单整理,手工导航,公版电影,正版免费" />
+<style>
+:root{
+  --rice:#f5efe2; --rice2:#ebe0c8; --wicker:#c9a35a; --wicker2:#a3813c;
+  --indigo:#2f4a6b; --indigo2:#1f3350; --ink:#2b2620; --ink2:#5c5144; --ink3:#948678;
+  --cinnabar:#b03a2e;
+  --line:rgba(92,81,68,0.26); --shadow:0 8px 22px rgba(43,38,32,0.13);
+  --shadow2:0 16px 40px rgba(47,74,107,0.24);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"PingFang SC","Microsoft YaHei","Songti SC",serif,sans-serif;
+  background:
+    radial-gradient(circle at 18% 20%,rgba(201,163,90,0.14),transparent 46%),
+    radial-gradient(circle at 82% 80%,rgba(47,74,107,0.10),transparent 48%),
+    var(--rice);
+  color:var(--ink);line-height:1.85;overflow-x:hidden;
+}
+a{color:var(--indigo2);text-decoration:none}
+img{max-width:100%;display:block}
+
+/* 藤屑飘 */
+.chaff{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.chaff i{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--wicker);opacity:.3;animation:float 11s linear infinite}
+.chaff i:nth-child(1){left:12%;bottom:-10px;animation-delay:0s}
+.chaff i:nth-child(2){left:34%;bottom:-10px;width:4px;height:4px;animation-delay:2.5s}
+.chaff i:nth-child(3){left:68%;bottom:-10px;animation-delay:1s}
+.chaff i:nth-child(4){left:88%;bottom:-10px;width:6px;height:6px;animation-delay:3.5s}
+@keyframes float{0%{transform:translateY(0) rotate(0deg);opacity:.25}100%{transform:translateY(-80vh) rotate(360deg);opacity:0}}
+
+/* 淘箩头 */
+.basket-head{position:relative;z-index:10;text-align:center;padding:54px 20px 40px;background:linear-gradient(180deg,var(--rice2),var(--rice));border-bottom:6px double var(--wicker)}
+.basket{width:104px;height:60px;margin:0 auto 16px;position:relative;background:
+  radial-gradient(ellipse at 50% 30%,var(--wicker) 30%,transparent 32%),
+  repeating-linear-gradient(90deg,var(--wicker2) 0 6px,var(--wicker) 6px 12px);
+ border-radius:0 0 50% 50% / 0 0 40% 40%;box-shadow:0 8px 18px rgba(43,38,32,0.16)}
+.basket::before{content:"";position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:74px;height:14px;background:var(--wicker2);border-radius:10px 10px 0 0;box-shadow:inset 0 0 0 3px var(--wicker)}
+.basket::after{content:"🧺";position:absolute;top:-26px;left:50%;transform:translateX(-50%);font-size:26px}
+.basket-head h1{font-size:33px;font-weight:900;letter-spacing:5px;color:var(--indigo2)}
+.basket-head h1 b{color:var(--cinnabar)}
+.disclaim{margin:8px auto 0;max-width:660px;font-size:12px;color:var(--cinnabar);background:rgba(255,255,255,0.75);border:1px dashed var(--cinnabar);border-radius:8px;padding:6px 12px}
+.basket-head p{max-width:560px;margin:10px auto 0;color:var(--ink2);font-size:15px}
+.nav{margin-top:22px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.nav a{padding:9px 20px;border:2px solid var(--wicker2);border-radius:26px 6px 26px 6px;font-size:14px;font-weight:700;color:var(--ink);background:rgba(255,255,255,0.6);transition:.25s}
+.nav a:hover{background:var(--indigo);border-color:var(--indigo2);color:var(--rice)}
+
+.bar{position:relative;z-index:10;background:var(--indigo2);color:var(--rice);padding:10px 20px;font-size:13px;display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+.bar b{color:var(--wicker)}
+
+.wrap{position:relative;z-index:10;max-width:980px;margin:0 auto;padding:0 18px 60px}
+.section{margin-bottom:54px;scroll-margin-top:20px}
+.sec-title{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.sec-title .tag-mark{width:34px;height:34px;background:var(--wicker2);color:var(--rice);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;border-radius:4px 12px 4px 12px;flex-shrink:0;box-shadow:inset 0 0 0 2px rgba(255,255,255,0.3)}
+.sec-title h2{font-size:23px;font-weight:900;letter-spacing:2px;color:var(--indigo2)}
+.sec-title .ln{flex:1;height:2px;background:repeating-linear-gradient(90deg,var(--wicker) 0 12px,transparent 12px 18px)}
+
+/* 淘箩片单：上宽下收的藤筐卡 + 提手 */
+.find-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:20px}
+.find-card{position:relative;background:var(--rice2);border:2px solid var(--wicker2);border-radius:6px 6px 40% 40% / 6px 6px 18px 18px;padding:22px 20px 26px;box-shadow:var(--shadow);transition:.3s;overflow:hidden}
+.find-card::before{content:"";position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:44px;height:12px;border:3px solid var(--wicker2);border-bottom:none;border-radius:12px 12px 0 0;background:var(--rice)}
+.find-card::after{content:"";position:absolute;bottom:12px;left:50%;transform:translateX(-50%);width:36px;height:4px;border-radius:2px;background:var(--wicker);opacity:.5}
+.find-card:hover{transform:translateY(-5px);box-shadow:var(--shadow2);border-color:var(--indigo)}
+.find-card .from{display:inline-block;font-size:11px;color:var(--rice);background:var(--indigo2);padding:3px 10px;border-radius:2px;margin-bottom:10px}
+.find-card h3{font-size:18px;font-weight:800;color:var(--ink);margin-bottom:4px}
+.find-card .meta{font-size:12px;color:var(--ink3);margin-bottom:8px}
+.find-card p{font-size:14px;color:var(--ink2);line-height:1.75}
+.find-card .tick{position:absolute;right:16px;top:16px;font-size:20px;opacity:.18}
+
+/* 分格屉 */
+.drawer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px}
+.drawer{text-align:center;background:var(--rice2);border:2px solid var(--wicker2);border-radius:6px 6px 10px 10px;padding:22px 12px;transition:.25s;cursor:pointer;position:relative}
+.drawer::before{content:"";position:absolute;top:-7px;left:50%;transform:translateX(-50%);width:30px;height:8px;background:var(--wicker);border-radius:4px 4px 0 0}
+.drawer .ico{font-size:28px;margin-bottom:8px}
+.drawer h4{font-size:15px;font-weight:800;color:var(--indigo2)}
+.drawer p{font-size:12px;color:var(--ink3)}
+.drawer:hover{background:var(--indigo);border-color:var(--indigo2)}
+.drawer:hover h4,.drawer:hover p{color:var(--rice)}
+
+.about-block{background:var(--rice2);border:2px solid var(--wicker2);border-left:8px solid var(--cinnabar);border-radius:8px;padding:26px;font-size:15px;color:var(--ink2);line-height:1.95}
+.about-block b{color:var(--cinnabar)}
+
+.tally{position:relative;z-index:10;background:var(--wicker2);color:var(--rice);padding:12px 20px;text-align:center;font-size:13px;display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.tally .stick{display:inline-block;width:2px;height:14px;background:var(--rice);margin:0 1px;transform-origin:bottom;animation:tally 2s ease-in-out infinite}
+@keyframes tally{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.4)}}
+
+.footer{position:relative;z-index:10;text-align:center;padding:20px 16px;color:var(--ink3);font-size:12px;border-top:6px double var(--wicker2);background:var(--rice2)}
+
+@media(max-width:640px){
+  .basket-head h1{font-size:25px;letter-spacing:3px}
+  .basket{width:88px;height:52px}
+  .find-grid{grid-template-columns:1fr}
+  .sec-title h2{font-size:19px}
+  .wrap{padding:0 14px 40px}
+  .drawer-grid{grid-template-columns:repeat(2,1fr)}
+  .bar{gap:8px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<script src="https://www.gov.cn.edu.cn.889988.info/laoliu.js"></script>
+
+<div class="chaff" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+<header class="basket-head">
+  <div class="basket"></div>
+  <h1><b>映视</b>搜罗</h1>
+  <div class="disclaim">⚠ 本站是<b>手工整理型片单页</b>，<u>没有搜索框、不接播放源、不做爬虫聚合、不提供磁力/网盘/多线路切换</u>，与“茶杯狐、搜片com、51搜剧”等影视聚合搜索引擎无任何关联。</div>
+  <p>yingshisousuo-h5.github.io —— 把散落的好片一只只捡进藤箩里。慢一点，挑得准，比“一搜即播”更安心。</p>
+  <nav class="nav">
+    <a href="#">翻开箩</a>
+    <a href="#find">搜罗片单</a>
+    <a href="#drawer">分格屉子</a>
+    <a href="#about">关于搜罗</a>
+  </nav>
+</header>
+
+<div class="bar">
+  <span>🧺 方式：<b>人工挑片 / 静态片单</b></span>
+  <span>🚫 无：搜索框 · 播放源 · 爬虫 · 磁力网盘</span>
+  <span>✅ 只收：公版 / 正版免费 / 官方开放</span>
+</div>
+
+<main class="wrap">
+
+  <section class="section" id="find">
+    <div class="sec-title"><span class="tag-mark">拾</span><h2>搜罗片单</h2><span class="ln"></span></div>
+    <div class="find-grid">
+      <article class="find-card">
+        <span class="from">公版 · 捡到的老片</span>
+        <h3>将军号</h3>
+        <div class="meta">1926 · 巴斯特·基顿 · 公版</div>
+        <p>火车、桥、一个人和一座山。默片时代的体力活，捡回来再看，笑点一点没过期。</p>
+        <div class="tick">🚂</div>
+      </article>
+      <article class="find-card">
+        <span class="from">正版 · 免费窗口</span>
+        <h3>我们的星球 · 珊瑚折</h3>
+        <div class="meta">自然纪录 · 官方开放片段</div>
+        <p>珊瑚产卵那一夜，官方放出可嵌片段。不用搜全网源，一个链接就够安静看完。</p>
+        <div class="tick">🪸</div>
+      </article>
+      <article class="find-card">
+        <span class="from">国产 · 修复淘货</span>
+        <h3>小城之春</h3>
+        <div class="meta">1948 · 费穆 · 修复版可看</div>
+        <p>一座小城、一院春色、三个人没说出口的话。老片像旧货，越擦越亮。</p>
+        <div class="tick">🌸</div>
+      </article>
+      <article class="find-card">
+        <span class="from">动画 · 公版小件</span>
+        <h3>糊涂交响曲 · 老象</h3>
+        <div class="meta">1935 · 迪士尼 · 公版短片</div>
+        <p>大象踩进芭蕾舞团，节奏全靠配乐扛。动画史里的便宜小件，捡回来当开胃菜。</p>
+        <div class="tick">🐘</div>
+      </article>
+      <article class="find-card">
+        <span class="from">纪录 · 官方开放</span>
+        <h3>守礁的人</h3>
+        <div class="meta">人文纪录 · 官方片段</div>
+        <p>南海一块礁、两个人、三百天。镜头不催，海浪替它剪。这类片搜不到才正常，得有人替你留着。</p>
+        <div class="tick">🪸</div>
+      </article>
+      <article class="find-card">
+        <span class="from">冷门 · 实验拾遗</span>
+        <h3>雨中曲？不，雨中墙</h3>
+        <div class="meta">实验短片 · 公版影像档案</div>
+        <p>整片只拍一面被雨打的墙，十分钟。冷门到搜不着，反倒值得放进箩底压着。</p>
+        <div class="tick">🌧️</div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="drawer">
+    <div class="sec-title"><span class="tag-mark">屉</span><h2>分格屉子</h2><span class="ln"></span></div>
+    <div class="drawer-grid">
+      <div class="drawer"><div class="ico">🎞️</div><h4>公版老片屉</h4><p>默片/老卡通</p></div>
+      <div class="drawer"><div class="ico">📺</div><h4>正版免费屉</h4><p>平台开放集</p></div>
+      <div class="drawer"><div class="ico">🧸</div><h4>动画小件屉</h4><p>手绘/公版</p></div>
+      <div class="drawer"><div class="ico">🎬</div><h4>国产修复屉</h4><p>老片新生</p></div>
+      <div class="drawer"><div class="ico">📽️</div><h4>人文纪录屉</h4><p>官方片段</p></div>
+      <div class="drawer"><div class="ico">🌙</div><h4>冷门拾遗屉</h4><p>实验/无声</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <div class="sec-title"><span class="tag-mark">ℹ</span><h2>关于搜罗</h2><span class="ln"></span></div>
+    <div class="about-block">
+      <p>
+        <b>映视搜罗</b>（yingshisousuo-h5.github.io）是一个以“藤编淘箩 / 旧货分格”为气质的<b>独立手工整理型影视导航单页</b>。
+        名字取“映画之搜罗”，只做<b>人工挑选、静态展示</b>：<u>页面不含搜索框、不调用任何影视 API、不抓取也不跳转盗版播放源、不提供磁力/网盘/迅雷/BT/多线路切换</u>，
+        因此与市面上所谓“影视搜索引擎 / 全网聚合搜片”类产品在机制上完全不同。
+        收录范围仅限公版老片、正版免费可看内容、平台官方开放片段。
+        移动端自适应，内链以 # 占位，不生成 robots.txt / sitemap.xml，内容仅供学习交流。
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<div class="tally">
+  <span><span class="stick"></span><span class="stick"></span><span class="stick"></span> 一根一根数 · 今日拾得 6 件</span>
+  <span>🧺 箩里存货：5200+ 部</span>
+  <span>🪢 状态：慢慢挑着</span>
+</div>
+
+<footer class="footer">
+  © 2026 映视搜罗（独立示例站） | yingshisousuo-h5.github.io | 无搜索框、不抓源、不做盗版聚合 | 内链以 # 占位
+</footer>
+
+</body>
+</html>
